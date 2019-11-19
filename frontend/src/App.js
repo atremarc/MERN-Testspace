@@ -10,6 +10,7 @@ import Footer from './components/Footer'
 import BackendTester from './components/BackendTester'
 import DBDisplay from './components/DBDisplay'
 import AddUser from './components/AddUser'
+import Auth from './components/Auth'
 
 class App extends Component {
 
@@ -56,6 +57,7 @@ class App extends Component {
             <Route exact path='/auth' render={props => (
               <Row>
                 <Col>
+                  <Auth />
                 </Col>
               </Row>
             )} />
