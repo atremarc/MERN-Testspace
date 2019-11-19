@@ -16,7 +16,7 @@ class Header extends Component {
           <Link to='/'>Home</Link>{' | '}
           <Link to='/backend'>Backend</Link>{' | '}
           <Link to='/database'>Database</Link>{' | '}
-          <Link to='/auth'>Authorization</Link>
+          <Link to='/login'>Authorization</Link>
         </div>
       </header>
     )

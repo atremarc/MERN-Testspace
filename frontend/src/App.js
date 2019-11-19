@@ -54,7 +54,7 @@ class App extends Component {
                   </Col>
                 </Row>
               )} />
-            <Route exact path='/auth' render={props => (
+            <Route exact path='/login' render={props => (
               <Row>
                 <Col>
                   <Auth />
