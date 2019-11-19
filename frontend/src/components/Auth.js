@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { GoogleLogin } from 'react-google-login'
 import Radium from 'radium'
+import Axios from 'axios'
 
 class Auth extends Component {
 
@@ -24,7 +25,21 @@ class Auth extends Component {
   }
 
   googleResponse = (response) => {
-    console.log(response)
+    const tokenBlob = new Blob([JSON.stringify({ access_token: response.accessToken }, null, 2)], { type: 'application/json'})
+    Axios.post('/auth/google', tokenBlob)
+      .then((res) => {
+        const tokenX = res.headers.get('x-auth-token')
+        res.json()
+        .then((userX) => {
+          if (tokenX) {
+            this.setState({
+              isAuthenticated: true,
+              user: userX,
+              token: tokenX
+            })
+          }
+        })
+      })
   }
 
   onFailure = (error) => {
