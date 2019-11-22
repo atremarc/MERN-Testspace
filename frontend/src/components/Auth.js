@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { GoogleLogin } from 'react-google-login'
 import Radium from 'radium'
+import Axios from 'axios'
 
 class Auth extends Component {
 
@@ -15,6 +16,13 @@ class Auth extends Component {
 
   }
 
+  login = () => {
+    const headers = {
+      'Access-Control-Allow-Origin' : '*'
+    }
+    Axios.get('/auth/google', { headers: headers })
+  }
+
   logout = () => {
     this.setState({
       isAuthenticated: false,
@@ -25,39 +33,51 @@ class Auth extends Component {
 
   googleResponse = (response) => {
     console.log(response)
+    Axios.post('/auth/google', response)
   }
 
   onFailure = (error) => {
     console.log(error)
   }
 
-  isAuth = () => {
-    if (this.state.isAuthenticated) {
-      return (
-        <>
-        <p>Authenticated!</p>
-        <button style={buttonStyle} onClick={this.logout}>Logout</button>
-        </>
-      )
-    } else {
-      return (
-        <>
-        <p>Not Authenticated...</p>
-        <GoogleLogin
-          clientId='509600513555-od8erl9fljp5gc58bhbomac19utti6rt.apps.googleusercontent.com'
-          buttonText='Login'
-          onSuccess={this.googleResponse}
-          onFailure={this.onFailure}
-        />
-      </>
-      )
+  onSignIn = () => {
+    console.log('sign in v3 pressed')
+  }
+
+  googleResponseV4 = (response) => {
+    console.log('v4 activated')
+    console.log(response)
+    const body = {
+      tokenId: response.tokenId
     }
+    console.log(body)
+    Axios.post('/auth/googlev4', body)
+    .then((res) => {
+      console.log(res)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
   }
 
   render () {
     return (
       <div style={bodyStyle}>
-        {this.isAuth()}
+        <p>Authentication attempts: </p>
+        <GoogleLogin
+          clientId='509600513555-od8erl9fljp5gc58bhbomac19utti6rt.apps.googleusercontent.com'
+          buttonText='Login v1'
+          onSuccess={this.googleResponse}
+          onFailure={this.onFailure}
+        />
+      <button style={buttonStyle} onClick={this.login}>Login v2</button>
+      <div className="g-signin2" data-onsuccess="onSignIn"></div>
+        <GoogleLogin
+          clientId='509600513555-od8erl9fljp5gc58bhbomac19utti6rt.apps.googleusercontent.com'
+          buttonText='Login v4'
+          onSuccess={this.googleResponseV4}
+          onFailure={this.onFailure}
+        />
       </div>
     )
   }
