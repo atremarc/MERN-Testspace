@@ -3,6 +3,8 @@ import { GoogleLogin } from 'react-google-login'
 import Radium from 'radium'
 import Axios from 'axios'
 
+import keys from '../config/keys'
+
 class Auth extends Component {
 
   constructor(props) {
@@ -34,7 +36,7 @@ class Auth extends Component {
       <div style={bodyStyle}>
         <p>Sign in with Google</p>
         <GoogleLogin
-          clientId='509600513555-od8erl9fljp5gc58bhbomac19utti6rt.apps.googleusercontent.com'
+          clientId={keys.google.clientID}
           buttonText='Login'
           onSuccess={this.googleResponse}
           onFailure={this.onFailure}

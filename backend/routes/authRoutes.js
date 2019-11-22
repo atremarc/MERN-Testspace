@@ -27,7 +27,6 @@ async function verify(token, client) {
 }
 
 //recieve token id from frontend
-//recieve token id (v4)
 router.post('/google', (req, res) => {
   const body = req.body.tokenID;
   console.log(body);
