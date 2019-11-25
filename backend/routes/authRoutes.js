@@ -29,41 +29,50 @@ async function verify(token, client) {
   console.log('Email: ' + email);
 
   var message = '';
-  var cookie = {};
-  await User.find({email: email}, (error, user) => {
-    if(error) {
-      message = error;
-    } else if (user.length === 0) {
-      message = 'this user is not in the database';
-    } else {
-      message = 'this user is in the database';
-      const session = new Session({
-        email: email,
-        session_token: token
-      });
-      cookie = {
-        email: email,
-        session_token: token
-      };
-      session.save((error, session) => {
-        if (error) {
-          console.log(error);
-        } else {
-          console.log('session saved');
+
+  try {
+    await User.find({email: email},  async (error, user) => {
+      if(error) {
+        message = error;
+      } else if (user.length === 0) {
+        message = 'this user is not in the database';
+      } else {
+        message = 'this user is in the database';
+        const session = new Session({
+          email: email,
+          session_token: token
+        });
+
+        try {
+          await session.save( async (error, session) => {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('session saved');
+
+            }
+          });
+        } catch (error) {
+          console.log(error)
         }
-      });
-      console.log(message);
-    }
-  });
-  return cookie;
+        console.log(message);
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+  return await {
+   email: email,
+   session_token: token
+ }
 }
 
 //recieve token id from frontend, verify it, and send session back in response
-router.post('/google', (req, res) => {
+router.post('/google', async (req, res) => {
   const body = req.body.tokenID;
   const client = new OAuth2Client(keys.google.clientID);
 
-  let cookie = verify(body, client).catch(console.error);
+  let cookie = await verify(body, client).catch(console.error);
 
   console.log('Cookie:' + cookie);
   return res.send(cookie);
