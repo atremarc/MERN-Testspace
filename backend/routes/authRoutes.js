@@ -5,6 +5,7 @@ const {OAuth2Client} = require('google-auth-library');
 
 //import files
 const User = require('../models/userModel');
+const Session = require('../models/sessionModel');
 const keys = require('../config/keys');
 
 //init bodyParser
@@ -13,10 +14,12 @@ router.use(bodyParser.json());
 
 //verify token
 async function verify(token, client) {
+
   const ticket = await client.verifyIdToken({
     idToken: token,
     audience: keys.google.clientID,
   });
+
   const payload = ticket.getPayload();
   const userid = payload['sub'];
   const domain = payload['hd'];
@@ -25,27 +28,45 @@ async function verify(token, client) {
   console.log('Domian: ' + domain);
   console.log('Email: ' + email);
 
-  var result = '';
-
-  User.find({email: email}, (error, user) => {
+  var message = '';
+  var cookie = {};
+  await User.find({email: email}, (error, user) => {
     if(error) {
-      result = error;
+      message = error;
     } else if (user.length === 0) {
-      result = 'this user is not in the database';
+      message = 'this user is not in the database';
     } else {
-      result = 'this user is in the database';
+      message = 'this user is in the database';
+      const session = new Session({
+        email: email,
+        session_token: token
+      });
+      cookie = {
+        email: email,
+        session_token: token
+      };
+      session.save((error, session) => {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('session saved');
+        }
+      });
+      console.log(message);
     }
-    console.log(result);
   });
+  return cookie;
 }
 
-//recieve token id from frontend
+//recieve token id from frontend, verify it, and send session back in response
 router.post('/google', (req, res) => {
   const body = req.body.tokenID;
   const client = new OAuth2Client(keys.google.clientID);
 
-  verify(body, client).catch(console.error);
-  return res.send('token sent to backend');
+  let cookie = verify(body, client).catch(console.error);
+
+  console.log('Cookie:' + cookie);
+  return res.send(cookie);
 });
 
 module.exports = router;
