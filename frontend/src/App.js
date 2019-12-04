@@ -17,8 +17,18 @@ class App extends Component {
   constructor(props) {
     super(props)
 
-    this.state = {}
+    this.state = {
+      session: {}
+    }
 
+    this.setSession = this.setSession.bind(this)
+
+  }
+
+  setSession = (currentSession) => {
+    this.setState({
+      session: currentSession
+    })
   }
 
   render () {
@@ -57,7 +67,11 @@ class App extends Component {
             <Route exact path='/auth' render={props => (
               <Row>
                 <Col>
-                  <Auth />
+                  <Auth
+                    email={this.state.session.email}
+                    token={this.state.session.session_token}
+                    setSession={this.setSession}
+                  />
                 </Col>
               </Row>
             )} />

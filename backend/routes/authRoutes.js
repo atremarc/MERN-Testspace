@@ -72,10 +72,10 @@ router.post('/google', async (req, res) => {
   const body = req.body.tokenID;
   const client = new OAuth2Client(keys.google.clientID);
 
-  let cookie = await verify(body, client).catch(console.error);
+  let session = await verify(body, client).catch(console.error);
 
-  console.log('Cookie:' + cookie);
-  return res.send(cookie);
+  console.log('Session:' + session);
+  return res.send(session);
 });
 
 module.exports = router;

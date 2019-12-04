@@ -18,9 +18,11 @@ class Auth extends Component {
     const body = {
       tokenID: response.tokenId
     }
+    console.log(response)
     Axios.post('/auth/google', body)
     .then((res) => {
       console.log(res)
+      this.props.setSession(res.data)
     })
     .catch((error) => {
       console.log(error)
@@ -31,18 +33,45 @@ class Auth extends Component {
     console.log(error)
   }
 
+  logout = () => {
+    const newSession = {
+      email: '',
+    }
+    this.props.setSession(newSession)
+  }
+
   render () {
-    return (
-      <div style={bodyStyle}>
-        <p>Sign in with Google</p>
-        <GoogleLogin
-          clientId={keys.google.clientID}
-          buttonText='Login'
-          onSuccess={this.googleResponse}
-          onFailure={this.onFailure}
-        />
-      </div>
-    )
+    if(!(this.props.token === undefined)) {
+      return (
+        <>
+        <div style={bodyStyle}>
+          <p>Sign in with Google</p>
+          <GoogleLogin
+            clientId={keys.google.clientID}
+            buttonText='Login'
+            onSuccess={this.googleResponse}
+            onFailure={this.onFailure}
+          />
+        </div>
+        <div style={bodyStyle}>
+          <p>User: {this.props.email}</p>
+          <button style={buttonStyle} onClick={this.logout}>Click Here to Logout.</button>
+        </div>
+        </>
+      )
+    } else {
+      return (
+        <div style={bodyStyle}>
+          <p>Sign in with Google</p>
+          <GoogleLogin
+            clientId={keys.google.clientID}
+            buttonText='Login'
+            onSuccess={this.googleResponse}
+            onFailure={this.onFailure}
+          />
+        </div>
+      )
+    }
   }
 }
 
@@ -55,6 +84,22 @@ const bodyStyle = {
   justifyContent: 'center',
   border: '4px solid #512500',
   borderRadius: '16px',
+}
+
+const buttonStyle = {
+  width: '208px',
+  background:'#A32551',
+  color: '#000000',
+  padding: '16px 16px',
+  margin: '16px 16px',
+  border: '4px solid #3D0E1E',
+  borderRadius: '4px',
+  fontSize: 'large',
+  cursor: 'pointer',
+  ':hover': {
+    background: '#7D1D3F',
+    color: '#ffffff'
+  },
 }
 
 export default Radium(Auth)
