@@ -13,10 +13,10 @@ router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
 
 //verify token
-async function verify(token, client) {
+async function verify(idToken, accessToken, client) {
 
   const ticket = await client.verifyIdToken({
-    idToken: token,
+    idToken: idToken,
     audience: keys.google.clientID,
   });
 
@@ -40,7 +40,8 @@ async function verify(token, client) {
         message = 'this user is in the database';
         const session = new Session({
           email: email,
-          session_token: token
+          idToken: idToken,
+          accessToken: accessToken
         });
 
         try {
@@ -63,19 +64,36 @@ async function verify(token, client) {
   }
   return await {
    email: email,
-   session_token: token
+   idToken: idToken,
+   accessToken: accessToken
  }
 }
 
 //recieve token id from frontend, verify it, and send session back in response
 router.post('/google', async (req, res) => {
-  const body = req.body.tokenID;
+  const idToken = req.body.tokenID;
+  const accessToken = req.body.access_token;
   const client = new OAuth2Client(keys.google.clientID);
 
-  let session = await verify(body, client).catch(console.error);
+  let session = await verify(idToken, accessToken, client).catch(console.error);
 
   console.log('Session:' + session);
   return res.send(session);
+});
+
+//check access token and return ALLOWED or NOT ALLOWED
+router.post('/protected', async (req, res) => {
+  const accessToken = req.body.accessToken;
+  console.log(accessToken);
+  try {
+    const client = new OAuth2Client(keys.google.clientID);
+    const tokenInfo = await client.getTokenInfo(accessToken);
+    console.log(tokenInfo);
+    return res.send('ALLOWED');
+  } catch (error) {
+    console.log(error);
+    return res.send('NOT ALLOWED');
+  }
 });
 
 module.exports = router;

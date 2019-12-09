@@ -3,7 +3,8 @@ const Schema = mongoose.Schema;
 
 const sessionSchema = new Schema({
   email: String,
-  session_token: String
+  idToken: String,
+  accessToken: String
 });
 
 const Session = mongoose.model('session', sessionSchema);

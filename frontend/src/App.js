@@ -11,6 +11,8 @@ import BackendTester from './components/BackendTester'
 import DBDisplay from './components/DBDisplay'
 import AddUser from './components/AddUser'
 import Auth from './components/Auth'
+import LocalStorage from './components/LocalStorage'
+import Protected from './components/Protected'
 
 class App extends Component {
 
@@ -43,6 +45,8 @@ class App extends Component {
                   <Row>
                     <Col>
                       <p style={textStyle}>A place to test out MERN stack app features...</p>
+                      <LocalStorage />
+                      <Protected />
                     </Col>
                   </Row>
                 )}/>
@@ -69,7 +73,7 @@ class App extends Component {
                 <Col>
                   <Auth
                     email={this.state.session.email}
-                    token={this.state.session.session_token}
+                    token={this.state.session.accessToken}
                     setSession={this.setSession}
                   />
                 </Col>

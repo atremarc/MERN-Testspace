@@ -16,13 +16,18 @@ class Auth extends Component {
 
   googleResponse = (response) => {
     const body = {
-      tokenID: response.tokenId
+      tokenID: response.tokenId,
+      access_token: response.accessToken
     }
     console.log(response)
     Axios.post('/auth/google', body)
     .then((res) => {
       console.log(res)
       this.props.setSession(res.data)
+      console.log(res.data)
+
+      localStorage.setItem('access_token', res.data.accessToken)
+      localStorage.setItem('user', res.data.email)
     })
     .catch((error) => {
       console.log(error)
@@ -38,6 +43,8 @@ class Auth extends Component {
       email: '',
     }
     this.props.setSession(newSession)
+    localStorage.clear();
+
   }
 
   render () {
