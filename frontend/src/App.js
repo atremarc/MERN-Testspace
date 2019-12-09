@@ -20,16 +20,13 @@ class App extends Component {
     super(props)
 
     this.state = {
-      session: {}
+      user: ''
     }
-
-    this.setSession = this.setSession.bind(this)
-
   }
 
-  setSession = (currentSession) => {
+  setUser = (user) => {
     this.setState({
-      session: currentSession
+      user: user
     })
   }
 
@@ -72,9 +69,8 @@ class App extends Component {
               <Row>
                 <Col>
                   <Auth
-                    email={this.state.session.email}
-                    token={this.state.session.accessToken}
-                    setSession={this.setSession}
+                    setUser={this.setUser}
+                    user={this.state.user}
                   />
                 </Col>
               </Row>

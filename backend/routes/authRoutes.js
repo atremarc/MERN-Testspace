@@ -5,7 +5,6 @@ const {OAuth2Client} = require('google-auth-library');
 
 //import files
 const User = require('../models/userModel');
-const Session = require('../models/sessionModel');
 const keys = require('../config/keys');
 
 //init bodyParser
@@ -14,6 +13,7 @@ router.use(bodyParser.json());
 
 //verify token
 async function verify(idToken, accessToken, client) {
+  var myAccessToken = accessToken
 
   const ticket = await client.verifyIdToken({
     idToken: idToken,
@@ -23,40 +23,21 @@ async function verify(idToken, accessToken, client) {
   const payload = ticket.getPayload();
   const userid = payload['sub'];
   const domain = payload['hd'];
-  const email = payload['email']
+  var email = payload['email']
   console.log('User ID: ' + userid);
   console.log('Domian: ' + domain);
   console.log('Email: ' + email);
 
-  var message = '';
-
   try {
     await User.find({email: email},  async (error, user) => {
       if(error) {
-        message = error;
+        console.log(error);
       } else if (user.length === 0) {
-        message = 'this user is not in the database';
+        console.log('this user is not in the database');
+        email = await 'not_authorized';
+        myAccessToken = await 'not_authorized';
       } else {
-        message = 'this user is in the database';
-        const session = new Session({
-          email: email,
-          idToken: idToken,
-          accessToken: accessToken
-        });
-
-        try {
-          await session.save( async (error, session) => {
-            if (error) {
-              console.log(error);
-            } else {
-              console.log('session saved');
-
-            }
-          });
-        } catch (error) {
-          console.log(error)
-        }
-        console.log(message);
+        console.log('this user is in the database');
       }
     });
   } catch (error) {
@@ -64,20 +45,18 @@ async function verify(idToken, accessToken, client) {
   }
   return await {
    email: email,
-   idToken: idToken,
-   accessToken: accessToken
+   accessToken: myAccessToken
  }
 }
 
 //recieve token id from frontend, verify it, and send session back in response
 router.post('/google', async (req, res) => {
   const idToken = req.body.tokenID;
-  const accessToken = req.body.access_token;
+  const accessToken = req.body.accessToken;
   const client = new OAuth2Client(keys.google.clientID);
 
   let session = await verify(idToken, accessToken, client).catch(console.error);
 
-  console.log('Session:' + session);
   return res.send(session);
 });
 

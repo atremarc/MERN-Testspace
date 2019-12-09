@@ -15,19 +15,19 @@ class Auth extends Component {
   }
 
   googleResponse = (response) => {
+    console.log(response)
     const body = {
       tokenID: response.tokenId,
-      access_token: response.accessToken
+      accessToken: response.accessToken
     }
-    console.log(response)
+    console.log(body)
     Axios.post('/auth/google', body)
     .then((res) => {
-      console.log(res)
-      this.props.setSession(res.data)
       console.log(res.data)
 
       localStorage.setItem('access_token', res.data.accessToken)
       localStorage.setItem('user', res.data.email)
+      this.props.setUser(res.data.email)
     })
     .catch((error) => {
       console.log(error)
@@ -39,51 +39,32 @@ class Auth extends Component {
   }
 
   logout = () => {
-    const newSession = {
-      email: '',
-    }
-    this.props.setSession(newSession)
-    localStorage.clear();
-
+    localStorage.clear()
+    this.props.setUser('')
   }
 
   render () {
-    if(!(this.props.token === undefined)) {
-      return (
-        <>
-        <div style={bodyStyle}>
-          <p>Sign in with Google</p>
-          <GoogleLogin
-            clientId={keys.google.clientID}
-            buttonText='Login'
-            onSuccess={this.googleResponse}
-            onFailure={this.onFailure}
-          />
-        </div>
-
-        <div style={bodyStyle}>
-          <p>User: {this.props.email}</p>
-          <GoogleLogout
-            clientId={keys.google.clientID}
-            buttonText="Log Out"
-            onLogoutSuccess={this.logout}
-          />
-        </div>
-        </>
-      )
-    } else {
-      return (
-        <div style={bodyStyle}>
-          <p>Sign in with Google</p>
-          <GoogleLogin
-            clientId={keys.google.clientID}
-            buttonText='Login'
-            onSuccess={this.googleResponse}
-            onFailure={this.onFailure}
-          />
-        </div>
-      )
-    }
+    return (
+      <>
+      <div style={bodyStyle}>
+        <p>Sign in with Google</p>
+        <GoogleLogin
+          clientId={keys.google.clientID}
+          buttonText='Login'
+          onSuccess={this.googleResponse}
+          onFailure={this.onFailure}
+        />
+      </div>
+      <div style={bodyStyle}>
+        <p>User: {this.props.user}</p>
+        <GoogleLogout
+          clientId={keys.google.clientID}
+          buttonText="Log Out"
+          onLogoutSuccess={this.logout}
+        />
+      </div>
+      </>
+    )
   }
 }
 
