@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { GoogleLogin } from 'react-google-login'
-import Radium from 'radium'
+import { GoogleLogout } from 'react-google-login'
 import Axios from 'axios'
 
 import keys from '../config/keys'
@@ -60,9 +60,14 @@ class Auth extends Component {
             onFailure={this.onFailure}
           />
         </div>
+
         <div style={bodyStyle}>
           <p>User: {this.props.email}</p>
-          <button style={buttonStyle} onClick={this.logout}>Click Here to Logout.</button>
+          <GoogleLogout
+            clientId={keys.google.clientID}
+            buttonText="Log Out"
+            onLogoutSuccess={this.logout}
+          />
         </div>
         </>
       )
@@ -93,20 +98,4 @@ const bodyStyle = {
   borderRadius: '16px',
 }
 
-const buttonStyle = {
-  width: '208px',
-  background:'#A32551',
-  color: '#000000',
-  padding: '16px 16px',
-  margin: '16px 16px',
-  border: '4px solid #3D0E1E',
-  borderRadius: '4px',
-  fontSize: 'large',
-  cursor: 'pointer',
-  ':hover': {
-    background: '#7D1D3F',
-    color: '#ffffff'
-  },
-}
-
-export default Radium(Auth)
+export default Auth
