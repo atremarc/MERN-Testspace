@@ -18,7 +18,7 @@ class Auth extends Component {
     console.log(response)
     const body = {
       tokenID: response.tokenId,
-      accessToken: response.accessToken
+      accessToken: response.Zi.access_token
     }
     console.log(body)
     Axios.post('/auth/google', body)

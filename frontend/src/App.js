@@ -30,6 +30,12 @@ class App extends Component {
     })
   }
 
+  componentDidMount () {
+    this.setState({
+      user: localStorage.getItem('user')
+    })
+  }
+
   render () {
     return (
       <Router>
